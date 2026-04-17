@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indoor Nursery Assist - Plant Care & Profit Management</title>
+    <style>
+        :root {
+            --color-bg-primary: #0f172a;
+            --color-bg-secondary: #1e293b;
+            --color-bg-elevated: #334155;
+            --color-text-primary: #f1f5f9;
+            --color-text-secondary: #cbd5e1;
+            --color-accent: #38bdf8;
+            --color-accent-hover: #0ea5e9;
+            --color-success: #22c55e;
+            --color-warning: #f59e0b;
+            --color-danger: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: var(--color-bg-secondary);
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 1.75rem;
+            color: var(--color-accent);
+            margin-bottom: 0.25rem;
+        }
+
+        .header p {
+            color: var(--color-text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .nav {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .nav button {
+            background: var(--color-bg-elevated);
+            color: var(--color-text-primary);
+            border: 1px solid var(--color-accent);
+            padding: 0.5rem 1.25rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .nav button:hover {
+            background: var(--color-accent);
+            color: var(--color-bg-primary);
+        }
+
+        .nav button.active {
+            background: var(--color-accent);
+            color: var(--color-bg-primary);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--color-bg-secondary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+
+        .card h2 {
+            color: var(--color-accent);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .card h3 {
+            color: var(--color-text-primary);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 1.15rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--color-bg-elevated);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 6px;
+            color: var(--color-text-primary);
+            font-size: 0.95rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--color-accent);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.1);
+        }
+
+        .btn {
+            background: var(--color-accent);
+            color: var(--color-bg-primary);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: var(--color-accent-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--color-bg-elevated);
+            color: var(--color-text-primary);
+            border: 1px solid var(--color-accent);
+        }
+
+        .btn-secondary:hover {
+            background: var(--color-accent);
+            color: var(--color-bg-primary);
+        }
+
+        .plant-list {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .plant-item {
+            background: var(--color-bg-elevated);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--color-accent);
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 1rem;
+            align-items: start;
+        }
+
+        .plant-info h4 {
+            color: var(--color-accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .plant-info p {
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .plant-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-direction: column;
+        }
+
+        .plant-actions button {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--color-bg-elevated);
+            padding: 1.25rem;
+            border-radius: 8px;
+            text-align: center;
+            border-top: 3px solid var(--color-accent);
+        }
+
+        .stat-card h3 {
+            color: var(--color-text-secondary);
+            font-size: 0.85rem;
+            margin: 0 0 0.5rem 0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card .value {
+            color: var(--color-accent);
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .care-schedule {
+            background: var(--color-bg-elevated);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .care-schedule h4 {
+            color: var(--color-accent);
+            margin-bottom: 0.75rem;
+        }
+
+        .care-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            background: var(--color-bg-secondary);
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+        }
+
+        .care-item span {
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .care-item .status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status.due {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--color-danger);
+        }
+
+        .status.upcoming {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--color-warning);
+        }
+
+        .status.done {
+            background: rgba(34, 197, 94, 0.2);
+            color: var(--color-success);
+        }
+
+        .podcast-player {
+            background: var(--color-bg-elevated);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+        }
+
+        .podcast-player h4 {
+            color: var(--color-accent);
+            margin-bottom: 0.75rem;
+        }
+
+        .podcast-player p {
+            color: var(--color-text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+
+        audio {
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            background: var(--color-bg-elevated);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid var(--color-accent);
+        }
+
+        .feature-card h3 {
+            color: var(--color-accent);
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card ul {
+            margin-left: 1.25rem;
+            color: var(--color-text-secondary);
+        }
+
+        .feature-card li {
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .plant-item {
+                grid-template-columns: 1fr;
+            }
+
+            .plant-actions {
+                flex-direction: row;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🌱 Indoor Nursery Assist</h1>
+        <p>Manage Plant Care &amp; Profit for Small Indoor Nurseries</p>
+        <div class="nav">
+            <button class="active" onclick="showSection('home')">Home</button>
+            <button onclick="showSection('plants')">My Plants</button>
+            <button onclick="showSection('care')">Care Schedule</button>
+            <button onclick="showSection('profit')">Profit Analysis</button>
+            <button onclick="showSection('podcast')">Learning Podcast</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Home Section -->
+        <div id="home" class="section active">
+            <div class="card">
+                <h2>Welcome to Indoor Nursery Assist</h2>
+                <p>A simple web platform designed to help small indoor nurseries grow healthy plants and manage profit efficiently. No more scattered notes or guesswork—everything you need in one place.</p>
+                
+                <h3>What Makes This Unique?</h3>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h3>🎯 Built for Small Indoor Nurseries</h3>
+                        <ul>
+                            <li>Focused on indoor plant species</li>
+                            <li>Simple interface for non-technical owners</li>
+                            <li>No complex logistics or enterprise features</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h3>🌿 Care + Business Combined</h3>
+                        <ul>
+                            <li>Plant care guidance (light, water, fertilizer)</li>
+                            <li>Automatic reminders for watering &amp; tasks</li>
+                            <li>Profit tracking per plant or batch</li>
+                        </ul>
+                    </div>
+                    <div class="feature-card">
+                        <h3>📚 Learning Resources</h3>
+                        <ul>
+                            <li>Podcast episodes on plant care</li>
+                            <li>Common mistakes to avoid</li>
+                            <li>Pricing and profitability tips</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h3 style="margin-top: 2rem;">Quick Stats</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Plants</h3>
+                        <div class="value" id="totalPlants">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Investment</h3>
+                        <div class="value" id="totalInvestment">₹0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Potential Revenue</h3>
+                        <div class="value" id="totalRevenue">₹0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Expected Profit</h3>
+                        <div class="value" id="totalProfit">₹0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Plants Section -->
+        <div id="plants" class="section">
+            <div class="card">
+                <h2>Plant Registry</h2>
+                <p>Register and manage your indoor plants with care instructions and pricing.</p>
+
+                <h3>Add New Plant</h3>
+                <form id="plantForm">
+                    <div class="form-group">
+                        <label for="plantName">Plant Species Name</label>
+                        <input type="text" id="plantName" placeholder="e.g., Snake Plant, Monstera, Peace Lily" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="quantity">Quantity</label>
+                        <input type="number" id="quantity" placeholder="10" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="purchaseCost">Purchase Cost (per plant)</label>
+                        <input type="number" id="purchaseCost" placeholder="50" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="sellingPrice">Selling Price (per plant)</label>
+                        <input type="number" id="sellingPrice" placeholder="120" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lightReq">Light Requirement</label>
+                        <select id="lightReq" required>
+                            <option value="">Select...</option>
+                            <option value="Low Light">Low Light (indirect, shade)</option>
+                            <option value="Medium Light">Medium Light (bright indirect)</option>
+                            <option value="High Light">High Light (direct sunlight)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="waterFreq">Watering Frequency</label>
+                        <select id="waterFreq" required>
+                            <option value="">Select...</option>
+                            <option value="Every 2-3 days">Every 2-3 days</option>
+                            <option value="Once a week">Once a week</option>
+                            <option value="Every 10-14 days">Every 10-14 days</option>
+                            <option value="Once a month">Once a month</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location in Nursery</label>
+                        <input type="text" id="location" placeholder="e.g., Shade Area A, Shelf 2" required>
+                    </div>
+                    <button type="submit" class="btn">Add Plant</button>
+                </form>
+
+                <h3>Registered Plants</h3>
+                <div id="plantList" class="plant-list"></div>
+            </div>
+        </div>
+
+        <!-- Care Schedule Section -->
+        <div id="care" class="section">
+            <div class="card">
+                <h2>Care Schedule &amp; Reminders</h2>
+                <p>Track watering, fertilizing, and other care tasks for your plants.</p>
+
+                <div id="careScheduleList"></div>
+            </div>
+        </div>
+
+        <!-- Profit Analysis Section -->
+        <div id="profit" class="section">
+            <div class="card">
+                <h2>Profit Analysis</h2>
+                <p>View cost, revenue, and profit breakdown for your nursery inventory.</p>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <h3>Total Investment</h3>
+                        <div class="value" id="profitTotalCost">₹0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Potential Revenue</h3>
+                        <div class="value" id="profitTotalRevenue">₹0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Expected Profit</h3>
+                        <div class="value" id="profitTotalProfit">₹0</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Profit Margin</h3>
+                        <div class="value" id="profitMargin">0%</div>
+                    </div>
+                </div>
+
+                <h3>Per-Plant Breakdown</h3>
+                <div id="profitBreakdown"></div>
+            </div>
+        </div>
+
+        <!-- Podcast Section -->
+        <div id="podcast" class="section">
+            <div class="card">
+                <h2>Learning Podcast</h2>
+                <p>Listen to bite-sized episodes on plant care, common mistakes, and profit tips for indoor nurseries.</p>
+
+                <div class="podcast-player">
+                    <h4>Episode 1: Introduction to Indoor Nursery Management</h4>
+                    <p>Learn the basics of managing a small indoor nursery, common challenges, and how this platform helps you stay organized.</p>
+                    <audio controls>
+                        <source src="audio/Episode 1 – Welcome to Indoor Nursery Assist.mp3" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+
+                <div class="podcast-player">
+                    <h4>Episode 2: WEBSITE TOUR</h4>
+                    <p>Tour Guide For our new users.</p>
+                    <audio controls>
+                        <source src="audio/WEBSITE TOUR.mp3" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+
+                <div class="podcast-player">
+                    <h4>Episode 3: Light Requirements for Indoor Plants</h4>
+                    <p>Understand different light levels (low, medium, high) and where to place your plants for optimal growth.</p>
+                    <audio controls>
+                        <source src="audio/episode3_light.mp3" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+
+                <div class="podcast-player">
+                    <h4>Episode 4: Setting Profitable Selling Prices</h4>
+                    <p>Learn how to calculate cost, add markup, and set competitive selling prices to ensure healthy profit margins.</p>
+                    <audio controls>
+                        <source src="audio/episode4_pricing.mp3" type="audio/mpeg">
+                        Your browser does not support the audio element.
+                    </audio>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let plants = [];
+
+        function showSection(sectionId) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.nav button').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+
+            if (sectionId === 'care') {
+                renderCareSchedule();
+            } else if (sectionId === 'profit') {
+                renderProfitAnalysis();
+            }
+        }
+
+        document.getElementById('plantForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const plant = {
+                id: Date.now(),
+                name: document.getElementById('plantName').value,
+                quantity: parseInt(document.getElementById('quantity').value),
+                purchaseCost: parseFloat(document.getElementById('purchaseCost').value),
+                sellingPrice: parseFloat(document.getElementById('sellingPrice').value),
+                lightReq: document.getElementById('lightReq').value,
+                waterFreq: document.getElementById('waterFreq').value,
+                location: document.getElementById('location').value,
+                addedDate: new Date().toLocaleDateString(),
+                lastWatered: new Date()
+            };
+
+            plants.push(plant);
+            renderPlantList();
+            updateStats();
+            this.reset();
+            alert('Plant added successfully!');
+        });
+
+        function renderPlantList() {
+            const list = document.getElementById('plantList');
+            if (plants.length === 0) {
+                list.innerHTML = '<p style="color: var(--color-text-secondary); text-align: center; padding: 2rem;">No plants registered yet. Add your first plant above.</p>';
+                return;
+            }
+
+            list.innerHTML = plants.map(plant => `
+                <div class="plant-item">
+                    <div class="plant-info">
+                        <h4>${plant.name}</h4>
+                        <p><strong>Quantity:</strong> ${plant.quantity} plants</p>
+                        <p><strong>Light:</strong> ${plant.lightReq} | <strong>Water:</strong> ${plant.waterFreq}</p>
+                        <p><strong>Location:</strong> ${plant.location}</p>
+                        <p><strong>Cost:</strong> ₹${plant.purchaseCost} | <strong>Price:</strong> ₹${plant.sellingPrice} | <strong>Profit/plant:</strong> ₹${(plant.sellingPrice - plant.purchaseCost).toFixed(2)}</p>
+                        <p style="font-size: 0.8rem; color: var(--color-text-secondary);">Added: ${plant.addedDate}</p>
+                    </div>
+                    <div class="plant-actions">
+                        <button class="btn btn-secondary" onclick="deletePlant(${plant.id})">Remove</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function deletePlant(id) {
+            if (confirm('Are you sure you want to remove this plant?')) {
+                plants = plants.filter(p => p.id !== id);
+                renderPlantList();
+                updateStats();
+            }
+        }
+
+        function updateStats() {
+            const totalPlants = plants.reduce((sum, p) => sum + p.quantity, 0);
+            const totalInvestment = plants.reduce((sum, p) => sum + (p.quantity * p.purchaseCost), 0);
+            const totalRevenue = plants.reduce((sum, p) => sum + (p.quantity * p.sellingPrice), 0);
+            const totalProfit = totalRevenue - totalInvestment;
+
+            document.getElementById('totalPlants').textContent = totalPlants;
+            document.getElementById('totalInvestment').textContent = '₹' + totalInvestment.toFixed(2);
+            document.getElementById('totalRevenue').textContent = '₹' + totalRevenue.toFixed(2);
+            document.getElementById('totalProfit').textContent = '₹' + totalProfit.toFixed(2);
+        }
+
+        function renderCareSchedule() {
+            const list = document.getElementById('careScheduleList');
+            if (plants.length === 0) {
+                list.innerHTML = '<p style="color: var(--color-text-secondary); text-align: center; padding: 2rem;">No plants to care for. Add plants first.</p>';
+                return;
+            }
+
+            list.innerHTML = plants.map(plant => {
+                const daysSinceWatered = Math.floor((new Date() - plant.lastWatered) / (1000 * 60 * 60 * 24));
+                let status = 'done';
+                let statusText = 'Recently watered';
+
+                if (plant.waterFreq === 'Every 2-3 days' && daysSinceWatered >= 2) {
+                    status = 'due';
+                    statusText = 'Water now';
+                } else if (plant.waterFreq === 'Once a week' && daysSinceWatered >= 7) {
+                    status = 'due';
+                    statusText = 'Water now';
+                } else if (plant.waterFreq === 'Every 10-14 days' && daysSinceWatered >= 10) {
+                    status = 'due';
+                    statusText = 'Water now';
+                } else if (plant.waterFreq === 'Once a month' && daysSinceWatered >= 30) {
+                    status = 'due';
+                    statusText = 'Water now';
+                } else if (daysSinceWatered >= 1) {
+                    status = 'upcoming';
+                    statusText = 'Check soon';
+                }
+
+                return `
+                    <div class="care-schedule">
+                        <h4>${plant.name} (${plant.quantity} plants)</h4>
+                        <div class="care-item">
+                            <span>💧 Watering: ${plant.waterFreq}</span>
+                            <span class="status ${status}">${statusText}</span>
+                        </div>
+                        <div class="care-item">
+                            <span>☀️ Light: ${plant.lightReq}</span>
+                            <span class="status done">Proper placement</span>
+                        </div>
+                        <div class="care-item">
+                            <span>📍 Location: ${plant.location}</span>
+                            <span class="status done">Tracked</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderProfitAnalysis() {
+            const totalInvestment = plants.reduce((sum, p) => sum + (p.quantity * p.purchaseCost), 0);
+            const totalRevenue = plants.reduce((sum, p) => sum + (p.quantity * p.sellingPrice), 0);
+            const totalProfit = totalRevenue - totalInvestment;
+            const margin = totalInvestment > 0 ? ((totalProfit / totalRevenue) * 100).toFixed(1) : 0;
+
+            document.getElementById('profitTotalCost').textContent = '₹' + totalInvestment.toFixed(2);
+            document.getElementById('profitTotalRevenue').textContent = '₹' + totalRevenue.toFixed(2);
+            document.getElementById('profitTotalProfit').textContent = '₹' + totalProfit.toFixed(2);
+            document.getElementById('profitMargin').textContent = margin + '%';
+
+            const breakdown = document.getElementById('profitBreakdown');
+            if (plants.length === 0) {
+                breakdown.innerHTML = '<p style="color: var(--color-text-secondary); text-align: center; padding: 2rem;">No plants to analyze.</p>';
+                return;
+            }
+
+            breakdown.innerHTML = plants.map(plant => {
+                const cost = plant.quantity * plant.purchaseCost;
+                const revenue = plant.quantity * plant.sellingPrice;
+                const profit = revenue - cost;
+                const plantMargin = revenue > 0 ? ((profit / revenue) * 100).toFixed(1) : 0;
+
+                return `
+                    <div class="plant-item">
+                        <div class="plant-info">
+                            <h4>${plant.name}</h4>
+                            <p><strong>Quantity:</strong> ${plant.quantity}</p>
+                            <p><strong>Total Cost:</strong> ₹${cost.toFixed(2)} | <strong>Total Revenue:</strong> ₹${revenue.toFixed(2)}</p>
+                            <p><strong>Total Profit:</strong> ₹${profit.toFixed(2)} | <strong>Margin:</strong> ${plantMargin}%</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        renderPlantList();
+        updateStats();
+    </script>
+</body>
+</html>
